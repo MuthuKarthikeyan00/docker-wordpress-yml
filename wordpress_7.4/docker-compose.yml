@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  db_5110:
+    image: mysql:5.7
+    volumes:
+      - db_data_5110:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    
+  wordpress_5110:
+    depends_on:
+      - db_5110
+    image: wordpress:php7.4-apache
+    volumes:
+      - ./wordpress:/var/www/html
+      - /home/cartrabbit/workspace/woo-discount-rules:/var/www/html/wp-content/plugins/woo-discount-rules
+    ports:
+      - "5110:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db_5110
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+  phpmyadmin_5110:
+    depends_on:
+      - db_5110
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    ports:
+      - "5120:80"
+    environment:
+      PMA_HOST: db_5110
+      PMA_USER: wordpress
+      PMA_PASSWORD: wordpress
+
+volumes:
+  db_data_5110: {}
+  wordpress_data: {}

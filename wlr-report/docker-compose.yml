@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  db_5310:
+    image: mysql:5.7
+    volumes:
+      - db_data_5310:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    
+  wordpress_5310:
+    depends_on:
+      - db_5310
+    image: wordpress:php8.2-apache
+    volumes:
+      - ./wordpress:/var/www/html
+      - /home/cartrabbit/workspace/wployalty:/var/www/html/wp-content/plugins/wployalty
+      - /home/cartrabbit/workspace/wp-loyalty-report:/var/www/html/wp-content/plugins/wp-loyalty-report
+    ports:
+      - "5310:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db_5310
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+  phpmyadmin_5310:
+    depends_on:
+      - db_5310
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    ports:
+      - "5320:80"
+    environment:
+      PMA_HOST: db_5310
+      PMA_USER: wordpress
+      PMA_PASSWORD: wordpress
+
+volumes:
+  db_data_5310: {}
+  wordpress_data: {}
+
